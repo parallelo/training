@@ -74,13 +74,27 @@ Download the data using the following command. Note: this will require a recent 
 ### Steps to run and time
 
 Run the docker container, assuming you are at the root directory of mlperf/trainiing repository. 
+For nvidia GPU (CUDA):
 
     cd translation/tensorflow
-    IMAGE=`sudo docker build . | tail -n 1 | awk '{print $3}'`
+    IMAGE=`sudo docker build . -f Dockerfile.cuda | tail -n 1 | awk '{print $3}'`
     SEED=1
     NOW=`date "+%F-%T"`
     sudo docker run \
         --runtime=nvidia \
+        -v $(pwd)/translation/raw_data:/raw_data \
+        -v $(pwd)/compliance:/mlperf/training/compliance \
+        -e "MLPERF_COMPLIANCE_PKG=/mlperf/training/compliance" \
+        -t -i $IMAGE "./run_and_time.sh" $SEED | tee benchmark-$NOW.log
+
+For AMD GPU (rocm):
+
+    cd translation/tensorflow
+    IMAGE=`sudo docker build . -f Dockerfile.rocm | tail -n 1 | awk '{print $3}'`
+    SEED=1
+    NOW=`date "+%F-%T"`
+    sudo docker run \
+        --device=/dev/kfd --device=/dev/dri --group-add video \
         -v $(pwd)/translation/raw_data:/raw_data \
         -v $(pwd)/compliance:/mlperf/training/compliance \
         -e "MLPERF_COMPLIANCE_PKG=/mlperf/training/compliance" \
