@@ -83,7 +83,7 @@ For nvidia GPU (CUDA):
     sudo docker run \
         --runtime=nvidia \
         -v $(pwd)/translation/raw_data:/raw_data \
-        -v $(pwd)/compliance:/mlperf/training/compliance \
+        -v $(pwd)/../../compliance:/mlperf/training/compliance \
         -e "MLPERF_COMPLIANCE_PKG=/mlperf/training/compliance" \
         -t -i $IMAGE "./run_and_time.sh" $SEED | tee benchmark-$NOW.log
 
@@ -96,7 +96,7 @@ For AMD GPU (rocm):
     sudo docker run \
         --device=/dev/kfd --device=/dev/dri --group-add video \
         -v $(pwd)/translation/raw_data:/raw_data \
-        -v $(pwd)/compliance:/mlperf/training/compliance \
+        -v $(pwd)/../../compliance:/mlperf/training/compliance \
         -e "MLPERF_COMPLIANCE_PKG=/mlperf/training/compliance" \
         -t -i $IMAGE "./run_and_time.sh" $SEED | tee benchmark-$NOW.log
 
