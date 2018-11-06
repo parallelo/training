@@ -57,13 +57,22 @@ Unlike other benchmarks, there is no data to download. All training data comes f
 ### Steps to run and time
 
 To run, this assumes you checked out the repo into $HOME, adjust paths as necessary.
+For nvidia GPU (CUDA):
 
-    cd ~/reference/reinforcement/tensorflow/
-    IMAGE=`sudo docker build . | tail -n 1 | awk '{print $3}'`
+    cd ~/training/reinforcement/tensorflow/
+    IMAGE=`sudo docker build . -f Dockerfile.cuda | tail -n 1 | awk '{print $3}'`
     SEED=1
     NOW=`date "+%F-%T"`
     sudo docker run --runtime=nvidia -t -i $IMAGE "./run_and_time.sh" $SEED | tee benchmark-$NOW.log
     
+For AMD GPU (rocm):
+
+    cd ~/training/reinforcement/tensorflow/
+    IMAGE=`sudo docker build . -f Dockerfile.rocm | tail -n 1 | awk '{print $3}'`
+    SEED=1
+    NOW=`date "+%F-%T"`
+    sudo docker run --device=/dev/kfd --device=/dev/dri --group-add video -t -i $IMAGE "./run_and_time.sh" $SEED | tee benchmark-$NOW.log
+
 To change the quality target, modify `params/final.json` and set the field `TERMINATION_ACCURACY` to be `0.10` for about a 10 hour runtime, or `0.03` for about a 3 hour runtime. Note that you will have to rebuild the docker after modifying `params/final.josn`.
 
 # 3. Model
