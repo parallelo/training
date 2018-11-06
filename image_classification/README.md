@@ -53,7 +53,7 @@ sleep 1;
 sudo service docker start
 
 ssh-keyscan github.com >> ~/.ssh/known_hosts
-git clone git@github.com:mlperf/reference.git
+git clone git@github.com:mlperf/training.git
 
 ```
 
@@ -70,11 +70,21 @@ the .tar files downloaded from image-net.org.
 We assume that imagenet pre-processed has already been mounted at `/imn`.
 
 ```bash
-    cd ~/reference/image_classification/tensorflow/
-    IMAGE=`sudo docker build . | tail -n 1 | awk '{print $3}'`
+For nvidia GPU (CUDA):
+
+    cd ~/training/image_classification/tensorflow/
+    IMAGE=`sudo docker build . -f Dockerfile.cuda | tail -n 1 | awk '{print $3}'`
     SEED=2
     NOW=`date "+%F-%T"`
     sudo docker run -v /imn:/imn --runtime=nvidia -t -i $IMAGE "./run_and_time.sh" $SEED | tee benchmark-$NOW.log
+
+For AMD GPU (rocm):
+
+    cd ~/training/image_classification/tensorflow/
+    IMAGE=`sudo docker build . -f DOckerfile.rocm | tail -n 1 | awk '{print $3}'`
+    SEED=2
+    NOW=`date "+%F-%T"`
+    sudo docker run -v /imn:/imn --device=/dev/kfd --device=/dev/dri --group-add video -t -i $IMAGE "./run_and_time.sh" $SEED | tee benchmark-$NOW.log
 
 # For reference,
 
