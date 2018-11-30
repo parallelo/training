@@ -35,6 +35,10 @@ import preprocessing
 import symmetries
 import go
 
+# TensorScope
+#sys.path.append('full path to TensorScope/tensorscope/ from clone git repo')
+from tensorscope import TensorScopeRunHook
+
 # How many positions to look at per generation.
 # Per AGZ, 2048 minibatch * 1k = 2M positions/generation
 #EXAMPLES_PER_GENERATION = 2000000
@@ -316,7 +320,11 @@ def train(working_dir, tf_records, generation_num, **hparams):
     def input_fn(): return preprocessing.get_input_tensors(
         TRAIN_BATCH_SIZE, tf_records)
     update_ratio_hook = UpdateRatioSessionHook(working_dir)
-    estimator.train(input_fn, hooks=[update_ratio_hook], max_steps=max_steps)
+    tensorscope_hook = TensorScopeRunHook(num_steps_to_warmup=10,
+                                          num_steps_to_measure=100,
+                                          model_name='minigo')
+    estimator.train(input_fn, hooks=[update_ratio_hook, tensorscope_hook],
+                    max_steps=max_steps)
 
 
 def validate(working_dir, tf_records, checkpoint_name=None, **hparams):

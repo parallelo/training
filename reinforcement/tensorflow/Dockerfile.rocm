@@ -24,4 +24,9 @@ RUN pip3 install --upgrade pip
 RUN pip3 install --upgrade setuptools
 RUN pip3 install -r minigo/requirements.txt
 
+# TensorScope
+RUN cd $HOME && git clone https://github.com/MikalaiDrabovich/TensorScope.git
+ENV TS_HOME $HOME/TensorScope
+ENV PYTHONPATH $TS_HOME/tensorscope:$PYTHONPATH
+
 ENTRYPOINT ["/bin/bash"]
